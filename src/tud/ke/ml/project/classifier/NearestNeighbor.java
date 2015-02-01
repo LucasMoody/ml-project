@@ -146,6 +146,8 @@ public class NearestNeighbor extends ANearestNeighbor {
 		//Calculate the Distance
 		for(int i = 0; i<instance1.size()-1;i++){
 			
+			//Skip Class Attribut
+			if (i == getClassAttribute()) continue;
 			//If it is a String
 			if(instance1.get(i) instanceof String){
 				if(!instance1.get(i).equals(instance2.get(i))){
@@ -163,8 +165,31 @@ public class NearestNeighbor extends ANearestNeighbor {
 	@Override
 	protected double determineEuclideanDistance(List<Object> instance1,
 			List<Object> instance2) {
-		// TODO Auto-generated method stub
-		return 0;
+		//Set distance to 0
+		double result = 0;
+		
+		//Calculate the Distance
+		for(int i = 0; i<instance1.size()-1;i++){
+			
+			//Skip the class attribut
+			if (i == getClassAttribute()) continue;
+			
+			double d = 0.0;
+			//If it is a String
+			if(instance1.get(i) instanceof String){
+				if(!instance1.get(i).equals(instance2.get(i))){
+					d = 1.0;
+				}
+
+			}
+			else{
+				//If it is numeric
+				d = Math.abs(((double) instance1.get(i)- (double) instance2.get(i)));	
+			}
+			result = result + Math.pow(d, 2);
+		}
+		
+		return Math.sqrt(result);
 	}
 	@Override
 	protected double[][] normalizationScaling() {
