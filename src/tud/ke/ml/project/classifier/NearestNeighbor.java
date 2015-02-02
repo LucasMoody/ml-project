@@ -29,11 +29,18 @@ public class NearestNeighbor extends ANearestNeighbor {
 	
 	@Override
 	protected Object vote(List<Pair<List<Object>, Double>> subset) {
-		//Get all unweighted Votes
-		Map<Object, Double> unweightedVotes =getUnweightedVotes(subset);
+		Map<Object, Double> votes = null;
+		if(!isInverseWeighting()){
+			//Get all unweighted Votes
+			votes = getUnweightedVotes(subset);
+			}
+		else{
+			//Get all weighted Votes
+			votes = getWeightedVotes(subset);
+			}
 		
 		//Return winner class
-		return getWinner(unweightedVotes);
+		return getWinner(votes);
 	}
 	@Override
 	protected void learnModel(List<List<Object>> traindata) {
@@ -72,8 +79,32 @@ public class NearestNeighbor extends ANearestNeighbor {
 	@Override
 	protected Map<Object, Double> getWeightedVotes(
 			List<Pair<List<Object>, Double>> subset) {
-		// TODO Auto-generated method stub
-		return null;
+		//Map for the weighted votes results
+		Map<Object, Double> result = new HashMap<Object,Double>();
+		
+		//Iterate over all instances in the subset
+		for(Pair<List<Object>, Double> instance: subset){
+			
+			//Get the class attribut
+			Object classAttribut = instance.getA().get(getClassAttribute());
+			//Get the distance
+			double distance = Math.pow((double) instance.getB(), -1);
+			
+			//New Entry
+			double newVote = 0;
+			if(result.containsKey(classAttribut)){
+				newVote = result.get(classAttribut) + distance;}
+			else{
+				newVote = distance;
+			}
+
+			//Remove old entry
+			result.remove(classAttribut);
+
+			//Update the Result
+			result.put(classAttribut, newVote);
+		}
+		return result;
 	}
 	@Override
 	protected Object getWinner(Map<Object, Double> votesFor) {
@@ -83,7 +114,7 @@ public class NearestNeighbor extends ANearestNeighbor {
 		
 		//Search the winner
 		for(Entry entry : votesFor.entrySet()){
-			if ((double)entry.getValue() >= max){
+			if ((double)entry.getValue() > max){
 				max = (double) entry.getValue();
 				winnerClass = entry.getKey();
 			}
@@ -119,14 +150,17 @@ public class NearestNeighbor extends ANearestNeighbor {
 			}
 		};
 		
+
+		
 		//Sort the list and get the first k instances
 		Collections.sort(result, comp);
 		
 		int to = Math.min(result.size(),getkNearest());
+
 		
 		//Return the list of the first k instances
 		if (to > 1){
-			return result.subList(0, to-1);
+			return result.subList(0, to);
 		}
 		else{
 			Pair<List<Object>, Double> resultFinal = result.get(0);
@@ -144,7 +178,7 @@ public class NearestNeighbor extends ANearestNeighbor {
 		double result = 0;
 		
 		//Calculate the Distance
-		for(int i = 0; i<instance1.size()-1;i++){
+		for(int i = 0; i<instance1.size();i++){
 			
 			//Skip Class Attribut
 			if (i == getClassAttribute()) continue;
@@ -169,7 +203,7 @@ public class NearestNeighbor extends ANearestNeighbor {
 		double result = 0;
 		
 		//Calculate the Distance
-		for(int i = 0; i<instance1.size()-1;i++){
+		for(int i = 0; i<instance1.size();i++){
 			
 			//Skip the class attribut
 			if (i == getClassAttribute()) continue;
