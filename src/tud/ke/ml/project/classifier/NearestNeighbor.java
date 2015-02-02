@@ -222,7 +222,6 @@ public class NearestNeighbor extends ANearestNeighbor {
 			}
 			result = result + Math.pow(d, 2);
 		}
-		
 		return Math.sqrt(result);
 	}
 	@Override
@@ -232,8 +231,8 @@ public class NearestNeighbor extends ANearestNeighbor {
 	}
 	@Override
 	protected String[] getMatrikelNumbers() {
-		// TODO Auto-generated method stub
-		return null;
+		String [] matrikelNumbers = new String[]{"1945847","1946134"};
+		return matrikelNumbers;
 	}
 
 }
